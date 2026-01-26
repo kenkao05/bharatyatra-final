@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gujarat - Jewel of Western India | Bharat Yatra</title>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- Supabase -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  
+  <!-- GSAP -->
+  <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+
+    :root {
+      --state-primary: #000000;
+      --state-secondary: #ffffff;
+      --state-accent: #8B0000;
+      --state-accent-dark: #660000;
+      --text-muted: #666;
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Georgia', 'Times New Roman', serif;
+    }
+
+    body {
+      background: #f4f4f4;
+      overflow-x: hidden;
+    }
+
+    /* ==================== NAVBAR ==================== */
+    #navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 12px 0;
+      z-index: 1000;
+      background: #ffffff;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(252, 176, 69, 0) 0%);
+      transition: var(--transition);
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      color: #ff6b35;
+      font-size: 1.8rem;
+      font-weight: bold;
+      letter-spacing: 3px;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: #969696;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #ff6b35;
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .menu-btn {
+      color: #969696;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* ==================== SIDEBAR ==================== */
+    .sidebar {
+      position: fixed;
+      right: -320px;
+      top: 0;
+      width: 300px;
+      height: 100%;
+      background: var(--state-primary);
+      z-index: 2000;
+      transition: var(--transition);
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .sidebar.active {
+      right: 0;
+    }
+
+    .close-btn {
+      color: var(--state-secondary);
+      font-size: 2rem;
+      cursor: pointer;
+      text-align: right;
+      margin-bottom: 20px;
+    }
+
+    .sidebar-links {
+      list-style: none;
+    }
+
+    .sidebar-links li {
+      padding: 12px 0;
+      border-bottom: 1px solid #333;
+    }
+
+    .sidebar-links a {
+      color: var(--state-secondary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transition: 0.3s;
+    }
+
+    .sidebar-links a:hover {
+      color: var(--state-accent);
+      padding-left: 10px;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      visibility: hidden;
+      opacity: 0;
+      z-index: 1500;
+      transition: var(--transition);
+    }
+
+    .overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* ==================== SCROLL PROGRESS ==================== */
+    .scroll-progress {
+      position: fixed;
+      bottom: 40px;
+      right: 40px;
+      z-index: 100;
+      display: flex;
+      gap: 12px;
+    }
+
+    .progress-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .progress-dot.active {
+      background: var(--state-accent);
+      transform: scale(1.3);
+    }
+
+    /* ==================== HORIZONTAL SCROLL ==================== */
+    .horizontal-wrapper {
+      position: relative;
+    }
+
+    .horizontal {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .track {
+      display: flex;
+      height: 100vh;
+      width: 400vw;
+    }
+
+    .panel {
+      width: 100vw;
+      height: 100vh;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    /* ==================== PANEL 1: VIDEO ==================== */
+    .video-panel {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #000000;
+    }
+
+    .video-panel video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;              
+      object-position: center 40%;
+      animation: fadeInVideo 2s ease forwards;
+    }
+
+    @keyframes fadeInVideo {
+      to { opacity: 1; }
+    }
+
+    .video-panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(0,0,0,0.5),
+        rgba(0,0,0,0.2),
+        rgba(0,0,0,0)
+      );
+      z-index: 1;
+    }
+
+    .video-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      gap: 20px;
+      max-width: 70vw;
+      margin: auto;
+      text-align: center;
+    }
+
+    .video-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(80px, 12vw, 160px);
+      font-weight: 700;
+      color: var(--state-secondary);
+      text-shadow: 4px 4px 20px rgba(0,0,0,0.7);
+      letter-spacing: 8px;
+      opacity: 0;
+      animation: fadeInTitle 1.5s ease 0.5s forwards;
+    }
+
+    .video-tagline {
+      font-family: 'Georgia', serif;
+      font-size: clamp(18px, 2vw, 28px);
+      color: var(--state-secondary);
+      text-shadow: 2px 2px 10px rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      opacity: 0;
+      animation: fadeInTitle 1.5s ease 1s forwards;
+    }
+
+    .video-tagline::before,
+    .video-tagline::after {
+      content: "";
+      width: 60px;
+      height: 2px;
+      background: var(--state-accent);
+    }
+
+    @keyframes fadeInTitle {
+      to { opacity: 1; }
+    }
+
+    .mute-btn {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.6);
+      border: 2px solid var(--state-secondary);
+      color: var(--state-secondary);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      z-index: 3;
+      backdrop-filter: blur(10px);
+    }
+
+    .mute-btn:hover {
+      background: var(--state-accent);
+      border-color: var(--state-accent);
+      transform: scale(1.1);
+    }
+
+    @media (max-height: 800px) {
+      .video-panel video {
+        object-position: center 35%;
+      }
+    }
+
+    /* ==================== PANEL 2: ATTRACTIONS ==================== */
+    .attractions-panel {
+      background: #ffffff;
+      padding: 80px 60px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .panel-title {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--state-primary);
+      margin-bottom: 50px;
+      letter-spacing: -1px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .panel-title::after {
+      content: "";
+      position: absolute;
+      bottom: -12px;
+      left: 0;
+      width: 80px;
+      height: 4px;
+      background: var(--state-accent);
+      border-radius: 4px;
+    }
+
+    .attractions-grid {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .attraction-card {
+      cursor: pointer;
+      text-align: center;
+      border: 3px solid transparent;
+      transition: var(--transition);
+    }
+
+    .attraction-card:hover {
+      border-color: var(--state-accent);
+    }
+
+    .attraction-card:nth-child(1) {
+      width: 200px;
+      align-self: flex-end;
+    }
+
+    .attraction-card:nth-child(1) .attraction-image {
+      width: 200px;
+      height: 200px;
+    }
+
+    .attraction-card:nth-child(2) {
+      width: 400px;
+      align-self: flex-end;
+    }
+
+    .attraction-card:nth-child(2) .attraction-image {
+      width: 400px;
+      height: 400px;
+    }
+
+    .attraction-card:nth-child(3) {
+      width: 240px;
+      align-self: flex-start;
+    }
+
+    .attraction-card:nth-child(3) .attraction-image {
+      width: 240px;
+      height: 240px;
+    }
+
+    .attraction-image {
+      width: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(0.2);
+      transition: var(--transition);
+    }
+
+    .attraction-card:hover .attraction-image {
+      filter: grayscale(0);
+    }
+
+    .attraction-content {
+      padding: 15px 0 0 0;
+    }
+
+    .attraction-content h3 {
+      font-size: 18px;
+      color: var(--state-primary);
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .attraction-content h3:hover {
+      color: var(--state-accent);
+    }
+
+    /* ==================== PANEL 3: DISTRICTS ==================== */
+    .districts-panel {
+      background: #000000;
+      color: #ffffff;
+      padding: 80px 60px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .districts-panel .panel-title {
+      color: #ffffff;
+    }
+
+    .districts-grid {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+
+    .district-card {
+      background: #ffffff;
+      border-radius: 0;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      width: 280px;
+      border: 3px solid var(--state-accent);
+    }
+
+    .district-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(139, 0, 0, 0.5);
+    }
+
+    .district-card img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      filter: grayscale(0.3);
+      transition: var(--transition);
+    }
+
+    .district-card:hover img {
+      filter: grayscale(0);
+    }
+
+    .district-info {
+      padding: 20px;
+      background: #ffffff;
+    }
+
+    .district-info h3 {
+      font-size: 24px;
+      margin-bottom: 8px;
+      color: #000000;
+    }
+
+    .district-info span {
+      color: #666;
+      font-size: 15px;
+    }
+
+    .district-info span i {
+      color: var(--state-accent);
+    }
+
+    .visit-all-btn {
+      display: inline-block;
+      background: var(--state-accent);
+      color: white;
+      padding: 12px 30px;
+      border-radius: 0;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      transition: var(--transition);
+      margin: 0 auto;
+      width: auto;
+      border: 2px solid var(--state-accent);
+    }
+
+    .visit-all-btn:hover {
+      background: var(--state-accent-dark);
+      border-color: var(--state-accent-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(139, 0, 0, 0.4);
+    }
+
+    /* ==================== PANEL 4: ARTS & CRAFTS ==================== */
+    .arts-panel {
+      background: #1a1a1a;
+      color: white;
+      padding: 90px 40px;
+      overflow-y: auto;
+    }
+
+    .arts-panel .panel-title {
+      color: var(--state-secondary);
+    }
+
+    .crafts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      grid-auto-rows: 200px;
+    }
+
+    .craft-card {
+      background: #000000;
+      border-radius: 0;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      border: 2px solid var(--state-accent);
+    }
+
+    .craft-card:nth-child(1) { grid-row: span 2; }
+    .craft-card:nth-child(3) { grid-row: span 2; }
+    .craft-card:nth-child(5) { grid-row: span 2; }
+
+    .craft-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 40px rgba(139, 0, 0, 0.6);
+    }
+
+    .craft-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(0.4) contrast(1.1);
+      transition: var(--transition);
+    }
+
+    .craft-card:hover img {
+      filter: grayscale(0) contrast(1);
+    }
+
+    .craft-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
+      padding: 30px 20px 20px;
+    }
+
+    .craft-card h3 {
+      font-size: 22px;
+      margin-bottom: 5px;
+      color: #ffffff;
+    }
+
+    .craft-card p {
+      font-size: 14px;
+      color: var(--state-accent);
+      font-weight: 600;
+    }
+
+    /* ==================== MODALS ==================== */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 3000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 0;
+      max-width: 700px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: modalSlideIn 0.3s ease;
+      border: 4px solid var(--state-accent);
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--state-accent);
+      color: white;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 10;
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      background: var(--state-accent-dark);
+      transform: rotate(90deg);
+    }
+
+    .modal-image {
+      width: 100%;
+      height: 350px;
+      object-fit: cover;
+      border-radius: 0;
+      filter: grayscale(0.2);
+    }
+
+    .modal-body {
+      padding: 40px;
+    }
+
+    .modal-body h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: var(--state-primary);
+    }
+
+    .modal-body p {
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 15px;
+    }
+
+    .modal-info {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 2px solid var(--state-accent);
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .info-item i {
+      color: var(--state-accent);
+      font-size: 20px;
+    }
+
+    .info-item div strong {
+      display: block;
+      color: var(--state-primary);
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .info-item div span {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    /* ==================== FOOTER ==================== */
+    footer {
+      background: var(--state-primary);
+      color: var(--state-secondary);
+      padding: 60px 20px;
+      border-top: 4px solid #ff6b35;
+    }
+
+    .footer-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 30px;
+    }
+
+    .footer-section h3 {
+      color: #ff6b35;
+      margin-bottom: 20px;
+      font-size: 1rem;
+      text-transform: uppercase;
+      border-left: 3px solid #ff6b35;
+      padding-left: 10px;
+    }
+
+    .footer-section ul {
+      list-style: none;
+    }
+
+    .footer-section a {
+      color: #bbb;
+      text-decoration: none;
+      font-size: 0.95rem;
+      line-height: 2.2;
+      transition: var(--transition);
+    }
+
+    .footer-section a:hover {
+      color: #ff6b35;
+      padding-left: 5px;
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .footer-social a {
+      width: 35px;
+      height: 35px;
+      background: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      color: white;
+      transition: 0.3s;
+    }
+
+    .footer-social a:hover {
+      background: #ff6b35;
+    }
+
+    .app-links {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .app-link {
+      background: #000;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      border: 1px solid #333;
+      font-size: 0.8rem;
+    }
+
+    .app-link:hover {
+      border-color: #ff6b35;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      margin-top: 50px;
+      padding-top: 20px;
+      border-top: 1px solid #333;
+      color: #777;
+      font-size: 0.85rem;
+    }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 1024px) {
+      .nav-links {
+        display: none;
+      }
+
+      .horizontal {
+        height: auto;
+      }
+
+      .track {
+        flex-direction: column;
+        width: 100vw;
+        height: auto;
+      }
+
+      .panel {
+        width: 100vw;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .attractions-grid {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .attraction-card:nth-child(1),
+      .attraction-card:nth-child(2),
+      .attraction-card:nth-child(3) {
+        width: 100%;
+        max-width: 400px;
+        align-self: center;
+      }
+
+      .attraction-card:nth-child(1) .attraction-image,
+      .attraction-card:nth-child(2) .attraction-image,
+      .attraction-card:nth-child(3) .attraction-image {
+        width: 100%;
+        height: 300px;
+      }
+
+      .districts-grid {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .district-card {
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .crafts-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .scroll-progress {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .crafts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-title {
+        font-size: 36px;
+      }
+
+      .modal-body {
+        padding: 20px;
+      }
+
+      .modal-info {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav id="navbar">
+    <div class="nav-container">
+      <a href="#" class="logo">BHARAT YATRA</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="gujaratdistricts.html">Districts</a></li>
+        <li><a href="about.html">About Us</a></li>
+      </ul>
+      <div class="menu-btn" id="open-sidebar">
+        <i class="fas fa-bars"></i>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <div class="sidebar" id="sidebar">
+    <div class="close-btn" id="close-sidebar">×</div>
+    <ul class="sidebar-links">
+      <li><a href="#"><i class="fas fa-map-marker-alt"></i> Destination</a></li>
+      <li><a href="#"><i class="fas fa-star"></i> Experiences</a></li>
+      <li><a href="#"><i class="fas fa-calendar-check"></i> Plan Your Trip</a></li>
+      <li><a href="#"><i class="fas fa-globe"></i> Content Hub</a></li>
+      <li><a href="#"><i class="fas fa-heart"></i> Travel for Life</a></li>
+      <li><a href="#"><i class="fas fa-palette"></i> Colours of India</a></li>
+      <li><a href="#"><i class="fas fa-question-circle"></i> FAQ</a></li>
+      <li><a href="#"><i class="fas fa-envelope"></i> Contact Us</a></li>
+    </ul>
+  </div>
+  <div class="overlay" id="overlay"></div>
+
+  <!-- ==================== SCROLL PROGRESS ==================== -->
+  <div class="scroll-progress">
+    <div class="progress-dot active" data-panel="0"></div>
+    <div class="progress-dot" data-panel="1"></div>
+    <div class="progress-dot" data-panel="2"></div>
+    <div class="progress-dot" data-panel="3"></div>
+  </div>
+
+  <!-- ==================== HORIZONTAL SCROLL ==================== -->
+  <div class="horizontal-wrapper">
+    <section class="horizontal">
+      <div class="track">
+
+        <!-- PANEL 1: VIDEO -->
+        <div class="panel video-panel">
+          <video id="heroVideo" autoplay muted loop playsinline>
+            <source src="../styling/stateimages/gujarat-intro.mp4" type="video/mp4">
+          </video>
+          <div class="video-overlay">
+            <h1 class="video-title"></h1>
+            <div class="video-tagline">Jewel of Western India</div>
+          </div>
+          <button class="mute-btn" id="muteBtn">
+            <i class="fas fa-volume-mute"></i>
+          </button>
+        </div>
+
+        <!-- PANEL 2: ATTRACTIONS -->
+        <div class="panel attractions-panel">
+          <h2 class="panel-title">Famous Attractions</h2>
+          <div class="attractions-grid" id="attractionsGrid"></div>
+        </div>
+
+        <!-- PANEL 3: DISTRICTS -->
+        <div class="panel districts-panel">
+          <h2 class="panel-title">Popular Districts</h2>
+          <div class="districts-grid" id="districtsGrid"></div>
+          <div style="text-align: center;">
+            <a href="gujaratdistricts.html" class="visit-all-btn">
+              Visit All Districts <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- PANEL 4: ARTS & CRAFTS -->
+        <div class="panel arts-panel">
+          <h2 class="panel-title">Arts & Crafts of Gujarat</h2>
+          <div class="crafts-grid" id="craftsGrid"></div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Destinations</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Medical Tourism</h3>
+        <ul>
+          <li><a href="#">Medical Tourism</a></li>
+          <li><a href="#">SEPC Medical Tourism</a></li>
+          <li><a href="#">Wellness Centers</a></li>
+          <li><a href="#">Yoga Retreats</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Special Hospitals</h3>
+        <ul>
+          <li><a href="#">AIIMS Delhi</a></li>
+          <li><a href="#">Apollo Hospitals</a></li>
+          <li><a href="#">Fortis Healthcare</a></li>
+          <li><a href="#">Medanta Hospital</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Experiences</h3>
+        <ul>
+          <li><a href="#">Cultural Tours</a></li>
+          <li><a href="#">Luxury Travel</a></li>
+          <li><a href="#">Eco Tourism</a></li>
+          <li><a href="#">Wildlife Safari</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Follow & App</h3>
+        <div class="footer-social">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+        <div class="app-links">
+          <a href="#" class="app-link">
+            <i class="fab fa-google-play"></i>
+            <div><small>Get it on</small><br>Google Play</div>
+          </a>
+          <a href="#" class="app-link">
+            <i class="fab fa-apple"></i>
+            <div><small>Download on</small><br>App Store</div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Bharat Yatra - Incredible India. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS ==================== -->
+  <div class="modal" id="attractionModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('attractionModal')">×</button>
+      <img id="modalImage" class="modal-image" src="" alt="">
+      <div class="modal-body">
+        <h2 id="modalName"></h2>
+        <p id="modalDescription"></p>
+        <div class="modal-info" id="modalInfo"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="craftModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('craftModal')">×</button>
+      <img id="craftModalImage" class="modal-image" src="" alt="">
+      <div class="modal-body">
+        <h2 id="craftModalName"></h2>
+        <p id="craftModalDescription"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== SUPABASE SETUP ====================
+    const supabaseClient = supabase.createClient(
+      "https://gtpnojbbamoaznlutxap.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0cG5vamJiYW1vYXpubHV0eGFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4Mjk3NjMsImV4cCI6MjA4NDQwNTc2M30.t6fwQJR9ljGGfOajPlXzWGSQbKCtpaTb4dWfb33BHxE"
+    );
+
+    // ==================== SIDEBAR FUNCTIONALITY ====================
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const openBtn = document.getElementById('open-sidebar');
+    const closeBtn = document.getElementById('close-sidebar');
+
+    openBtn.addEventListener('click', () => {
+      sidebar.classList.add('active');
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+
+    const closeSidebar = () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    };
+
+    closeBtn.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    // ==================== MUTE/UNMUTE VIDEO ====================
+    const video = document.getElementById('heroVideo');
+    const muteBtn = document.getElementById('muteBtn');
+    let isMuted = true;
+
+    muteBtn.addEventListener('click', () => {
+      isMuted = !isMuted;
+      video.muted = isMuted;
+      muteBtn.innerHTML = isMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+    });
+
+    // ==================== LOAD ATTRACTIONS ====================
+    async function loadAttractions() {
+      try {
+        const { data, error } = await supabaseClient
+          .from("attractions")
+          .select("*")
+          .eq("state_id", 1)
+          .order("priority_score", { ascending: false })
+          .limit(3);
+
+        if (error) throw error;
+
+        const container = document.getElementById("attractionsGrid");
+        container.innerHTML = "";
+
+        data.forEach(attraction => {
+          const card = document.createElement('div');
+          card.className = 'attraction-card';
+          card.innerHTML = `
+            <img src="${attraction.image_url}" alt="${attraction.name}" class="attraction-image">
+            <div class="attraction-content">
+              <h3 onclick="openAttractionModal(${attraction.id})">${attraction.name}</h3>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+        window.attractionsData = data;
+      } catch (error) {
+        console.error("Error loading attractions:", error);
+      }
+    }
+
+    // ==================== LOAD DISTRICTS ====================
+    async function loadDistricts() {
+      try {
+        const { data, error } = await supabaseClient
+          .from("districts")
+          .select(`
+            id,
+            name,
+            image_url,
+            attractions ( id )
+          `)
+          .eq("state_id", 1);
+
+        if (error) throw error;
+
+        const districtsWithCount = data
+          .map(d => ({
+            id: d.id,
+            name: d.name,
+            image_url: d.image_url,
+            count: d.attractions.length
+          }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 4);
+
+        const container = document.getElementById("districtsGrid");
+        container.innerHTML = "";
+
+        districtsWithCount.forEach(district => {
+          container.innerHTML += `
+            <div class="district-card" onclick="openDistrictModal(${district.id})">
+              <img src="${district.image_url}" alt="${district.name}">
+              <div class="district-info">
+                <h3>${district.name}</h3>
+                <span><i class="fas fa-map-marked-alt"></i> ${district.count} attractions</span>
+              </div>
+            </div>
+          `;
+        });
+      } catch (error) {
+        console.error("Error loading districts:", error);
+      }
+    }
+
+    // ==================== ARTS & CRAFTS DATA ====================
+    const craftsData = [
+      {
+        name: "Bandhani",
+        description: "Bandhani is a traditional tie-dye textile art form from Gujarat, known for its vibrant colors and intricate patterns. This ancient craft involves tying thousands of tiny knots on fabric before dyeing, creating stunning dotted designs. Artisans in Kutch and Saurashtra regions have perfected this technique over generations.",
+        image: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmediaindia.eu%2Fwp-content%2Fuploads%2F2016%2F12%2F3F5A8449.jpg&f=1&nofb=1&ipt=b24a2d632b2a9a136b65f604b1af92e7f10a95f04b25f87d7201e0f1da15bf4f",
+        where: "Best experienced in Bhuj, Jamnagar, and Rajkot markets"
+      },
+      {
+        name: "Patola Silk",
+        description: "Patola is one of the finest hand-woven silk fabrics in the world, exclusive to Patan, Gujarat. The double ikat weaving technique makes each saree a masterpiece, taking 6-12 months to create. These geometric patterns have been treasured for over 900 years and were once worn only by royalty.",
+        image: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftiimg.tistatic.com%2Ffp%2F1%2F002%2F079%2Ftraditional-patola-sarees-735.jpg&f=1&nofb=1&ipt=bfbaccf561f86214711b0b2d08e946ef3bb17b53b4e918dee30da0fb670ac049",
+        where: "Visit Patan's weaving workshops and Patola Heritage Museum"
+      },
+      {
+        name: "Kutch Embroidery",
+        description: "Kutch embroidery is a vibrant mirror-work craft featuring colorful thread work and tiny mirrors stitched into fabric. Each tribal community has its unique style - from Rabari's dense geometric patterns to Ahir's floral designs. This craft tells stories of desert life through needle and thread.",
+        image: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.sadhguru.org%2Fd%2F46272%2F1633188568-1633188567868.jpg&f=1&nofb=1&ipt=e369d11c45ca4aba59f181c971c7d1963be20f244509610d21f0c856b687cac8",
+        where: "Explore craft villages in Bhuj, Nirona, and Dhamadka"
+      },
+      {
+        name: "Rogan Art",
+        description: "Rogan painting is a rare 400-year-old art where artists use castor oil mixed with pigments to create intricate designs on fabric. The paint is applied with a metal rod, never touching the fabric directly. Today, only one family in Nirona village keeps this UNESCO-recognized craft alive.",
+        image: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmedia-cdn.tripadvisor.com%2Fmedia%2Fphoto-s%2F07%2F8a%2F42%2Fff%2Ftraditional-rogan-art.jpg&f=1&nofb=1&ipt=36d583b9cdfd9cc67222906d606d951aded7e764a5d86e9ea622f10296ff22c7",
+        where: "Visit the Khatri family workshop in Nirona village"
+      },
+      {
+        name: "Ajrakh Block Printing",
+        description: "Ajrakh is a centuries-old block-printing technique using natural dyes and hand-carved wooden blocks. The fabric undergoes a 16-step process involving washing, printing, and dyeing to achieve its signature indigo, red, and black geometric patterns. Each piece reflects the artisan's mastery and patience.",
+        image: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2F474x%2F36%2Fd5%2Fe0%2F36d5e0b12c4155a69fb0dbfba6c9915e--printing.jpg&f=1&nofb=1&ipt=ca0e47d7b61809fe9b088306ee019254768cfeb837990753bb501cee4d94a991",
+        where: "Discover in Ajrakhpur and Dhamadka villages near Bhuj"
+      }
+    ];
+
+    // ==================== LOAD CRAFTS ====================
+    function loadCrafts() {
+      const container = document.getElementById("craftsGrid");
+      container.innerHTML = "";
+
+      craftsData.forEach((craft, index) => {
+        container.innerHTML += `
+          <div class="craft-card" onclick="openCraftModal(${index})">
+            <img src="${craft.image}" alt="${craft.name}">
+            <div class="craft-overlay">
+              <h3>${craft.name}</h3>
+              <p>Tap to explore</p>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // ==================== MODAL FUNCTIONS ====================
+    function openAttractionModal(attractionId) {
+      const attraction = window.attractionsData.find(a => a.id === attractionId);
+      if (!attraction) return;
+
+      document.getElementById('modalImage').src = attraction.image_url;
+      document.getElementById('modalName').textContent = attraction.name;
+      document.getElementById('modalDescription').textContent = attraction.description || attraction.short_description || '';
+
+      let infoHtml = '';
+      
+      if (attraction.entry_fee !== undefined && attraction.entry_fee !== null) {
+        infoHtml += `
+          <div class="info-item">
+            <i class="fas fa-ticket-alt"></i>
+            <div>
+              <strong>Entry Fee</strong>
+              <span>₹${attraction.entry_fee === 0 ? 'Free' : attraction.entry_fee}</span>
+            </div>
+          </div>
+        `;
+      }
+      
+      if (attraction.estimated_time_hours) {
+        infoHtml += `
+          <div class="info-item">
+            <i class="fas fa-clock"></i>
+            <div>
+              <strong>Time Needed</strong>
+              <span>${attraction.estimated_time_hours} hours</span>
+            </div>
+          </div>
+        `;
+      }
+      
+      if (attraction.best_time_note) {
+        infoHtml += `
+          <div class="info-item">
+            <i class="fas fa-calendar-alt"></i>
+            <div>
+              <strong>Best Time</strong>
+              <span>${attraction.best_time_note}</span>
+            </div>
+          </div>
+        `;
+      }
+      
+      if (attraction.address || attraction.city) {
+        infoHtml += `
+          <div class="info-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+              <strong>Location</strong>
+              <span>${attraction.address || attraction.city || ''}</span>
+            </div>
+          </div>
+        `;
+      }
+      
+      if (attraction.contact_phone) {
+        infoHtml += `
+          <div class="info-item">
+            <i class="fas fa-phone"></i>
+            <div>
+              <strong>Contact</strong>
+              <span>${attraction.contact_phone}</span>
+            </div>
+          </div>
+        `;
+      }
+      
+      if (attraction.guide_available) {
+        infoHtml += `
+          <div class="info-item">
+            <i class="fas fa-user-tie"></i>
+            <div>
+              <strong>Guide Available</strong>
+              <span>${attraction.guide_price_range || 'Yes'}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      document.getElementById('modalInfo').innerHTML = infoHtml;
+      document.getElementById('attractionModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function openCraftModal(index) {
+      const craft = craftsData[index];
+      document.getElementById('craftModalImage').src = craft.image;
+      document.getElementById('craftModalName').textContent = craft.name;
+      document.getElementById('craftModalDescription').innerHTML = `
+        <p>${craft.description}</p>
+        <div class="modal-info">
+          <div class="info-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+              <strong>Where to Experience</strong>
+              <span>${craft.where}</span>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('craftModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function openDistrictModal(districtId) {
+      window.location.href = 'gujaratdistricts.html';
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal(modal.id);
+        }
+      });
+    });
+
+    // ==================== HORIZONTAL SCROLL (GSAP) ====================
+    function initHorizontalScroll() {
+      if (window.innerWidth > 1024) {
+        const panels = gsap.utils.toArray(".panel");
+        
+        gsap.to(panels, {
+          xPercent: -100 * (panels.length - 1),
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".horizontal",
+            pin: true,
+            scrub: 1,
+            end: () => "+=" + (window.innerWidth * panels.length),
+            onUpdate: (self) => {
+              const progress = self.progress;
+              const currentPanel = Math.floor(progress * panels.length);
+              
+              document.querySelectorAll('.progress-dot').forEach((dot, index) => {
+                if (index === currentPanel) {
+                  dot.classList.add('active');
+                } else {
+                  dot.classList.remove('active');
+                }
+              });
+            }
+          }
+        });
+
+        document.querySelectorAll('.progress-dot').forEach((dot, index) => {
+          dot.addEventListener('click', () => {
+            const scrollDistance = (index / panels.length) * (window.innerWidth * panels.length);
+            gsap.to(window, {
+              scrollTo: scrollDistance,
+              duration: 1,
+              ease: "power2.inOut"
+            });
+          });
+        });
+      }
+    }
+
+    // ==================== INITIALIZE ====================
+    window.addEventListener('load', () => {
+      loadAttractions();
+      loadDistricts();
+      loadCrafts();
+      
+      setTimeout(() => {
+        initHorizontalScroll();
+      }, 100);
+    });
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 250);
+    });
+  </script>
+</body>
+</html>
